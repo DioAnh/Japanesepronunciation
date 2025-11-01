@@ -1,14 +1,21 @@
 # Netlify build configuration
+
 [build]
-  # Tell Netlify where the serverless functions are
-  functions = "netlify/functions/"
-  # Tell Netlify where the frontend code is and how to build it
+  # Build settings for the frontend app
   base    = "startup-bot-frontend/"
   publish = "startup-bot-frontend/dist/"
   command = "npm run build"
 
-# This rule makes calls to your frontend's /api/* path
-# automatically run the functions we just created.
+  # Location of your serverless functions
+  functions = "netlify/functions/"
+
+# *** THÊM PHẦN CẤU HÌNH NÀY VÀO ***
+[functions]
+  # Chỉ định các thư viện mà functions cần
+  external_node_modules = ["dotenv", "@google/genai"]
+  node_bundler = "esbuild"
+
+# Redirect rule to make API calls cleaner
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
