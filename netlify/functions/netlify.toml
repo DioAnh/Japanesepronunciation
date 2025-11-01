@@ -1,0 +1,15 @@
+# Netlify build configuration
+[build]
+  # Tell Netlify where the serverless functions are
+  functions = "netlify/functions/"
+  # Tell Netlify where the frontend code is and how to build it
+  base    = "startup-bot-frontend/"
+  publish = "startup-bot-frontend/dist/"
+  command = "npm run build"
+
+# This rule makes calls to your frontend's /api/* path
+# automatically run the functions we just created.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

@@ -14,7 +14,7 @@ const audioPlayer = document.getElementById('audio-player') as HTMLAudioElement;
 
 
 // --- URL Backend ---
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // --- Trạng thái ứng dụng ---
 let currentWord = '';
