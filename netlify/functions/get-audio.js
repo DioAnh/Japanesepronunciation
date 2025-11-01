@@ -1,6 +1,5 @@
 import 'dotenv/config';
 
-// Helper function to create a WAV file from raw PCM data
 function createWavFile(pcmData) {
   const numChannels = 1, sampleRate = 24000, bitsPerSample = 16;
   const blockAlign = numChannels * (bitsPerSample / 8);
@@ -8,7 +7,6 @@ function createWavFile(pcmData) {
   const dataSize = pcmData.length;
   const fileSize = 36 + dataSize;
   const buffer = Buffer.alloc(44 + dataSize);
-
   buffer.write('RIFF', 0); buffer.writeUInt32LE(fileSize, 4); buffer.write('WAVE', 8);
   buffer.write('fmt ', 12); buffer.writeUInt32LE(16, 16); buffer.writeUInt16LE(1, 20);
   buffer.writeUInt16LE(numChannels, 22); buffer.writeUInt32LE(sampleRate, 24);
@@ -19,7 +17,6 @@ function createWavFile(pcmData) {
   return buffer;
 }
 
-// Helper function to call the TTS API
 const callTtsApi = async (romaji, voiceName) => {
   const ttsModel = "gemini-2.5-pro-preview-tts";
   const payload = { contents: [{ parts: [{ text: romaji }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } } } };
@@ -27,7 +24,11 @@ const callTtsApi = async (romaji, voiceName) => {
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${ttsModel}:generateContent?key=${apiKey}`;
   const ttsResponse = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
   
-  if (!ttsResponse.ok) throw new Error(`TTS API failed with status: ${ttsResponse.status}`);
+  if (!ttsResponse.ok) {
+    const errorBody = await ttsResponse.text();
+    console.error(`TTS API Fail (Voice: ${voiceName}):`, errorBody);
+    throw new Error(`TTS API call failed`);
+  }
   
   const result = await ttsResponse.json();
   const audioData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
@@ -41,8 +42,7 @@ const callTtsApi = async (romaji, voiceName) => {
   }
 };
 
-// Main function handler
-exports.handler = async function (event, context) {
+exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -51,10 +51,10 @@ exports.handler = async function (event, context) {
     const { romaji } = JSON.parse(event.body);
     if (!romaji) return { statusCode: 400, body: JSON.stringify({ error: 'No romaji text provided.' }) };
     
-    // Using a stable voice as primary
-    const primaryVoice = "Charon"; 
+    const primaryVoice = "Charon";
     const fallbackVoices = ["Kore", "Leda", "Zephyr", "Puck", "Orus"];
     let audioResult = null;
+    let lastError = null;
 
     try {
       audioResult = await callTtsApi(romaji, primaryVoice);
@@ -63,19 +63,23 @@ exports.handler = async function (event, context) {
       for (const voice of fallbackVoices) {
         try {
           audioResult = await callTtsApi(romaji, voice);
-          if (audioResult) break;
-        } catch (fallbackError) { /* continue */ }
+          if (audioResult) {
+            console.log(`TTS success with fallback: ${voice}`);
+            break;
+          }
+        } catch (fallbackError) { lastError = fallbackError; }
       }
     }
 
     if (audioResult) {
       return { statusCode: 200, body: JSON.stringify(audioResult) };
     } else {
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to generate audio after all retries.' }) };
+      console.error("All TTS attempts failed:", lastError?.message);
+      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to generate audio.' }) };
     }
 
   } catch (error) {
-    console.error("Error in get-audio function:", error);
+    console.error("Error in get-audio function:", error.message);
     return { statusCode: 500, body: JSON.stringify({ error: 'Internal Server Error.' }) };
   }
 };
