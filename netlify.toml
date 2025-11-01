@@ -1,14 +1,16 @@
-# Cấu hình build cho Netlify
+# Corrected Netlify configuration for the monorepo
 
 [build]
-  # Nơi chứa các file function
-  functions = "netlify/functions/"
-  # Nơi chứa code frontend và cách build
-  base    = "startup-bot-frontend/"
+  # The command tells Netlify to first go into the frontend folder, then run the build.
+  command = "cd startup-bot-frontend && npm run build"
+  
+  # The publish directory is the path to the built site, from the root of the project.
   publish = "startup-bot-frontend/dist/"
-  command = "npm run build"
+  
+  # The functions directory is also relative to the root of the project.
+  functions = "netlify/functions/"
 
-# Quy tắc chuyển hướng cho API
+# This redirect rule remains the same.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
