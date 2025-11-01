@@ -1,16 +1,18 @@
-# Corrected Netlify configuration for the monorepo
+# Cấu hình Netlify hoàn chỉnh
 
 [build]
-  # The command tells Netlify to first go into the frontend folder, then run the build.
-  command = "cd startup-bot-frontend && npm install && npm run build"
-  
-  # The publish directory is the path to the built site, from the root of the project.
+  # Lệnh build này không thay đổi
+  command = "npm install && cd startup-bot-frontend && npm install && npm run build"
   publish = "startup-bot-frontend/dist/"
-  
-  # The functions directory is also relative to the root of the project.
   functions = "netlify/functions/"
 
-# This redirect rule remains the same.
+# *** THÊM PHẦN CẤU HÌNH QUAN TRỌNG NÀY ***
+[functions]
+  # Yêu cầu Netlify sử dụng trình đóng gói Node File Tracing.
+  # Nó sẽ tự động tìm và bao gồm các thư viện cần thiết.
+  node_bundler = "nft"
+
+# Quy tắc chuyển hướng API không thay đổi
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
