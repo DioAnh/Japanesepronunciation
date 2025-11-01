@@ -1,0 +1,15 @@
+# Cấu hình build cho Netlify
+
+[build]
+  # Nơi chứa các file function
+  functions = "netlify/functions/"
+  # Nơi chứa code frontend và cách build
+  base    = "startup-bot-frontend/"
+  publish = "startup-bot-frontend/dist/"
+  command = "npm run build"
+
+# Quy tắc chuyển hướng cho API
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
