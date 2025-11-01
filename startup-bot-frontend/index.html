@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Phát Âm Tiếng Nhật</title>
+    <script type="module" src="/src/main.ts"></script>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Luyện Phát Âm Tiếng Nhật</h1>
+      <div class="score-container">
+        Điểm: <span id="score-display">0</span>
+      </div>
+      <div class="word-card">
+        <h2 id="word-display">...</h2>
+        <p id="romaji-display">...</p>
+        <p id="meaning-display">...</p>
+      </div>
+      <div class="button-container">
+        <button id="listen-button" class="btn btn-listen" disabled>Nghe 🔊</button>
+        <button id="record-button" class="btn btn-record" disabled>Ghi âm 🎙️</button>
+        <button id="next-button" class="btn btn-next" style="display: none;">Tiếp theo ➡️</button>
+      </div>
+      <p id="status-display">Hãy nhấn "Ghi âm" và đọc từ trên.</p>
+      <div id="tip-container" style="display: none;">
+        <p>💡 Lời khuyên: <span id="tip-display">...</span></p>
+      </div>
+    </div>
+
+    <audio id="audio-player" style="display: none;"></audio>
+    
+  </body>
+</html>
