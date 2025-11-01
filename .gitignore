@@ -1,0 +1,9 @@
+# Root dependencies
+/node_modules
+
+# Environment file
+.env
+
+# Frontend build output and dependencies
+/startup-bot-frontend/dist
+/startup-bot-frontend/node_modules
