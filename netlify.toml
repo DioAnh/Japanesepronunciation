@@ -2,7 +2,7 @@
 
 [build]
   # The command tells Netlify to first go into the frontend folder, then run the build.
-  command = "cd startup-bot-frontend && npm run build"
+  command = "cd startup-bot-frontend && npm install && npm run build"
   
   # The publish directory is the path to the built site, from the root of the project.
   publish = "startup-bot-frontend/dist/"
