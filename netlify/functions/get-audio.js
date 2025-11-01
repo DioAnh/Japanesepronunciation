@@ -18,7 +18,7 @@ function createWavFile(pcmData) {
   return buffer;
 }
 const callTtsApi = async (romaji, voiceName) => {
-  const ttsModel = "gemini-2.5-pro-preview-tts";
+  const ttsModel = "gemini-2.5-flash-preview-tts";
   const payload = { contents: [{ parts: [{ text: romaji }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } } } };
   const apiKey = process.env.GEMINI_API_KEY;
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${ttsModel}:generateContent?key=${apiKey}`;
